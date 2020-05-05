@@ -27,6 +27,7 @@ class Flash (Gtk.Window):
         display = Gdk.Display.get_default()
         # num_monitors = display.get_n_monitors()
         # print(num_monitors)
+        screen = display.get_default_screen()
         monitor = display.get_primary_monitor()
         geometry = monitor.get_geometry()
         width = geometry.width
@@ -47,10 +48,10 @@ class Flash (Gtk.Window):
         self.set_focus_on_map(False)
 
         # Don’t cast a shadow.
-        # visual = screen.get_rgba_visual()
-        # if visual is None:
-            # visual = screen.get_system_visual()
-        # self.set_visual(visual)
+        visual = screen.get_rgba_visual()
+        if visual is None:
+            visual = screen.get_system_visual()
+        self.set_visual(visual)
 
         # Ready GSound.
         self.sound = GSound.Context()
