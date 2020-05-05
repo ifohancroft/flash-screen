@@ -24,10 +24,13 @@ class Flash (Gtk.Window):
 
         super().__init__(type=Gtk.WindowType.POPUP)
 
-        # Set geometry.
-        screen = self.get_screen()
-        width = screen.get_width()
-        height = screen.get_height()
+        display = Gdk.Display.get_default()
+        # num_monitors = display.get_n_monitors()
+        # print(num_monitors)
+        monitor = display.get_primary_monitor()
+        geometry = monitor.get_geometry()
+        width = geometry.width
+        height = geometry.height
         self.resize(width, height)
         self.move(0, 0)
 
@@ -44,10 +47,10 @@ class Flash (Gtk.Window):
         self.set_focus_on_map(False)
 
         # Don’t cast a shadow.
-        visual = screen.get_rgba_visual()
-        if visual is None:
-            visual = screen.get_system_visual()
-        self.set_visual(visual)
+        # visual = screen.get_rgba_visual()
+        # if visual is None:
+            # visual = screen.get_system_visual()
+        # self.set_visual(visual)
 
         # Ready GSound.
         self.sound = GSound.Context()
