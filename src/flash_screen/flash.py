@@ -1,20 +1,16 @@
 """A Gtk widget implementing a shutter flash & sound."""
 
+import argparse
 import gi
 gi.require_version('GSound', '1.0')
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, Gdk, GObject, GSound
+from gi.repository import Gtk, Gdk, GObject, GSound, GLib
 
 
 class Flash (Gtk.Window):
     """Make the screen flash."""
 
-    def __init__(self,
-                 duration=100,
-                 fade=.95,
-                 fps=120,
-                 threshold=.95,
-                 sound=True):
+    def __init__(self, duration=100, fade=.95, fps=120, threshold=.95, sound=True):
         """
         Args:
             duration (int): Hold-time for the flash, in ms. After this interval
@@ -26,7 +22,7 @@ class Flash (Gtk.Window):
             sound (bool): Toogles whether the shutter-sound is played.
         """
 
-        super().__init__(Gtk.WindowType.POPUP)
+        super().__init__(type=Gtk.WindowType.POPUP)
 
         # Set geometry.
         screen = self.get_screen()
@@ -67,7 +63,7 @@ class Flash (Gtk.Window):
 
         # Good to go.
         self.show_all()
-        GObject.timeout_add(self._duration, self._begin_fade)
+        GLib.timeout_add(self._duration, self._begin_fade)
         if self._sound:
             self._fire_shutter_sound()
 
@@ -84,7 +80,7 @@ class Flash (Gtk.Window):
 
     def _begin_fade(self):
 
-        GObject.timeout_add(1000 / self._fps, self._do_fade)
+        GLib.timeout_add(1000 / self._fps, self._do_fade)
 
     def _do_fade(self):
 
@@ -94,7 +90,27 @@ class Flash (Gtk.Window):
         if self._opacity <= self._threshold:
             self.hide()
             # Give the shutter sound time to finish.
-            GObject.timeout_add(1000, Gtk.main_quit)
+            GLib.timeout_add(1000, Gtk.main_quit)
             return False
         else:
             return True
+
+parser = argparse.ArgumentParser(
+    description="Make the screen flash."
+)
+
+parser.add_argument(
+    "--muted",
+    dest='muted',
+    default=False,
+    action='store_true',
+    help="Mute the shutter sound."
+)
+
+def console_entry():
+
+    args = parser.parse_args()
+    Flash(sound=not args.muted)
+    Gtk.main()
+
+console_entry()
