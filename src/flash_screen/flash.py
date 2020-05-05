@@ -103,13 +103,7 @@ parser = argparse.ArgumentParser(
     description="Make the screen flash."
 )
 
-parser.add_argument(
-    "--muted",
-    dest='muted',
-    default=False,
-    action='store_true',
-    help="Mute the shutter sound."
-)
+parser.add_argument("--muted", dest='muted', default=False, action='store_true', help="Mute the shutter sound.")
 
 def console_entry():
 
