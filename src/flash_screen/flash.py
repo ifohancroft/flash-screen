@@ -10,7 +10,7 @@ from gi.repository import Gtk, Gdk, GObject, GSound, GLib
 class Flash (Gtk.Window):
     """Make the screen flash."""
 
-    def __init__(self, duration=100, fade=.95, fps=120, threshold=.95, sound=True):
+    def __init__(self, duration=50, fade=.95, fps=120, threshold=.95, sound=True):
         """
         Args:
             duration (int): Hold-time for the flash, in ms. After this interval
@@ -20,6 +20,10 @@ class Flash (Gtk.Window):
             threshold (float): The opacity level at which the flash is
                 considered finished.
             sound (bool): Toogles whether the shutter-sound is played.
+        """
+
+        css = """
+            .flash { background-color: rgba(255,255,255,1); }
         """
 
         super().__init__(type=Gtk.WindowType.POPUP)
@@ -34,6 +38,12 @@ class Flash (Gtk.Window):
         height = geometry.height
         self.resize(width, height)
         self.move(0, 0)
+
+        # Lets color it white
+        provider = Gtk.CssProvider()
+        provider.load_from_data(bytes(css.encode()))
+        Gtk.StyleContext.add_provider_for_screen(Gdk.Screen.get_default(), provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+        self.get_style_context().add_class('flash')
 
         # Make the window not look like a regular window.
         self.set_decorated(False)
@@ -81,6 +91,7 @@ class Flash (Gtk.Window):
 
         ctx.set_source_rgba(1, 1, 1, self._opacity)
         ctx.paint()
+        ctx.fill()
 
     def _begin_fade(self):
 
